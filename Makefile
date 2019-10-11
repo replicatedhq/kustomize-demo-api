@@ -5,6 +5,8 @@ VERSION_PACKAGE = github.com/replicatedhq/kustomize-demo-api/pkg/version
 VERSION ?=`git describe --tags`
 DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
+export GO111MODULE=on
+
 GIT_TREE = $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 ifneq "$(GIT_TREE)" ""
 define GIT_UPDATE_INDEX_CMD
