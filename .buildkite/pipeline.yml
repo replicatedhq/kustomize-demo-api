@@ -1,5 +1,10 @@
 steps:
   - command: make test build
     label: "test and build"
+    plugins:
+    - docker#v3.0.1:
+      image: replicated/gitops-builder:buildkite
+      always-pull: true
+      workdir: /go/src/github.com/replicatedhq/kustomize-demo-api
 
   - wait
