@@ -1,9 +1,11 @@
 package daemon
 
 import (
-	"errors"
+	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 
 	"github.com/replicatedhq/kustomize-demo-api/pkg/patcher"
 	"github.com/replicatedhq/kustomize-demo-api/pkg/version"
@@ -34,9 +36,8 @@ func Healthz(c *gin.Context) {
 func KustomizePatch(c *gin.Context) {
 	type Request struct {
 		Original string        `json:"original"`
-		Current  string        `json:"current"`
+		Patch    string        `json:"existing_patch"`
 		Path     []interface{} `json:"path"`
-		Resource string        `json:"resource"`
 	}
 	var request Request
 
@@ -46,7 +47,42 @@ func KustomizePatch(c *gin.Context) {
 		return
 	}
 
-	c.String(200, "not yet implemented")
+	var stringPath []string
+	for idx, value := range request.Path {
+		switch value.(type) {
+		case float64:
+			stringPath = append(stringPath, strconv.FormatFloat(value.(float64), 'f', 0, 64))
+		case string:
+			stringPath = append(stringPath, value.(string))
+		default:
+			c.AbortWithError(500, fmt.Errorf("value %+v at idx %d of path is not a string or a float", value, idx))
+			return
+		}
+	}
+
+	modified, err := patcher.ModifyField([]byte(request.Original), stringPath)
+	if err != nil {
+		c.AbortWithError(500, errors.Wrapf(err, "modify field"))
+		return
+	}
+
+	patch, err := patcher.CreateTwoWayMergePatch([]byte(request.Original), modified)
+	if err != nil {
+		c.AbortWithError(500, errors.Wrapf(err, "create patch for field"))
+		return
+	}
+
+	if request.Patch != "" {
+		patch, err = patcher.CombinePatches([]byte(request.Original), [][]byte{[]byte(request.Patch), patch})
+		if err != nil {
+			c.AbortWithError(500, errors.Wrapf(err, "merge new patch with existing"))
+			return
+		}
+	}
+
+	c.JSON(200, map[string]interface{}{
+		"patch": string(patch),
+	})
 }
 
 func ApplyPatch(c *gin.Context) {
@@ -64,7 +100,7 @@ func ApplyPatch(c *gin.Context) {
 
 	modified, err := patcher.ApplyPatch([]byte(request.Resource), []byte(request.Patch))
 	if err != nil {
-		c.AbortWithError(500, errors.New("internal_server_error"))
+		c.AbortWithError(500, errors.Wrapf(err, "apply patch"))
 		return
 	}
 

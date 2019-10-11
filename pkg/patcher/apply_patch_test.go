@@ -15,7 +15,7 @@ func TestApplyPatch(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name: "basic deployment",
+			name: "basic service",
 			original: []byte(`
 apiVersion: v1
 kind: Service
@@ -23,8 +23,6 @@ metadata:
   name: redis-master
   labels:
     app: redis
-    role: master
-    tier: backend
 spec:
   ports:
   - port: 6379
@@ -40,8 +38,6 @@ kind: Service
 metadata:
   labels:
     app: redis
-    role: master
-    tier: backend
   name: redis-master
 spec:
   selector:
@@ -52,8 +48,6 @@ kind: Service
 metadata:
   labels:
     app: redis
-    role: master
-    tier: backend
   name: redis-master
 spec:
   ports:
