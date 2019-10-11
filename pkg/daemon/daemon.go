@@ -49,11 +49,11 @@ func KustomizePatch(c *gin.Context) {
 
 	var stringPath []string
 	for idx, value := range request.Path {
-		switch value.(type) {
+		switch value := value.(type) {
 		case float64:
-			stringPath = append(stringPath, strconv.FormatFloat(value.(float64), 'f', 0, 64))
+			stringPath = append(stringPath, strconv.FormatFloat(value, 'f', 0, 64))
 		case string:
-			stringPath = append(stringPath, value.(string))
+			stringPath = append(stringPath, value)
 		default:
 			c.AbortWithError(500, fmt.Errorf("value %+v at idx %d of path is not a string or a float", value, idx))
 			return
