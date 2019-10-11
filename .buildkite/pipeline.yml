@@ -1,5 +1,5 @@
 steps:
   - command: make test build
-    label: "test"
+    label: "test and build"
 
   - wait
