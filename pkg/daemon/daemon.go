@@ -1,7 +1,6 @@
 package daemon
 
 import (
-	"context"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 	"github.com/replicatedhq/kustomize-demo-api/pkg/version"
 )
 
-func Serve(ctx context.Context) error {
+func Serve() error {
 	g := gin.New()
 
 	root := g.Group("/")
