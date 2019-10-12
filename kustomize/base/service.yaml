@@ -9,7 +9,7 @@ spec:
   ports:
   - name: kustomize-demo-api
     port: 3000
-    targetPort: kustomize-demo-api
+    targetPort: kustomize
     nodePort: 30110
   selector:
     app: kustomize-demo-api

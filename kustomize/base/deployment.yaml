@@ -32,13 +32,13 @@ spec:
             - name: PROJECT_NAME
               value: kustomize-demo-api
           ports:
-            - name: kustomize-demo-api
+            - name: kustomize
               containerPort: 3000
           readinessProbe:
             failureThreshold: 3
             httpGet:
               path: /healthz
-              port: kustomize-demo-api
+              port: kustomize
               scheme: HTTP
             initialDelaySeconds: 2
             periodSeconds: 2
@@ -48,7 +48,7 @@ spec:
             failureThreshold: 2
             httpGet:
               path: /livez
-              port: kustomize-demo-api
+              port: kustomize
               scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 15
