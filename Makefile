@@ -82,7 +82,7 @@ build-production: REGISTRY = 799720048698.dkr.ecr.us-east-1.amazonaws.com
 build-production: push-docker
 
 .PHONY: push-docker
-push-docker: DOCKERNAME = ${PROJECT_NAME}:${BUILD_VERSION}
+push-docker: DOCKERNAME = ${PROJECT_NAME}:push-docker
 push-docker: $(SRC) build-docker
 	docker tag ${DOCKERNAME} $(REGISTRY)/${PROJECT_NAME}:$${BUILDKITE_COMMIT:0:7}
 	docker push $(REGISTRY)/${PROJECT_NAME}:$${BUILDKITE_COMMIT:0:7}
