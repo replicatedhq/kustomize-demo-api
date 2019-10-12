@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-demo-api
+spec:
+  replicas: 3
+  template:
+    spec:
+      nodeSelector:
+        replicated/node-pool: untrusted
+      containers:
+        - name: kustomize-demo-api
+          image: 923411875752.dkr.ecr.us-east-1.amazonaws.com/kustomize-demo-api:latest
+

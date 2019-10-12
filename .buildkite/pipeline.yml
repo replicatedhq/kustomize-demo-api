@@ -1,10 +1,65 @@
 steps:
   - command: make test build
-    label: "test and build"
+    label: "test"
     plugins:
     - docker#v3.0.1:
         image: replicated/gitops-builder:buildkite-go12
         always-pull: true
         workdir: /go/src/github.com/replicatedhq/kustomize-demo-api
+    artifact_paths:
+    - "bin/*"
 
   - wait
+
+  - commands:
+    - mkdir -p bin
+    - buildkite-agent artifact download bin/* . --step test
+    - chmod a+x bin/kustomize-demo-api
+    - make build-staging
+    label: "build-staging"
+    branches: master
+    env:
+        AWS_PROFILE: replicated-staging
+    plugins:
+    - ecr#v2.0.0:
+          login: true
+          account_ids: "923411875752"
+
+  - commands:
+    - mkdir -p bin
+    - buildkite-agent artifact download bin/* . --step test
+    - chmod a+x bin/kustomize-demo-api
+    - make build-production
+    label: "build-production"
+    branches: master
+    env:
+        AWS_PROFILE: replicated-production
+    plugins:
+    - ecr#v2.0.0:
+          login: true
+          account_ids: "799720048698"
+
+  - wait
+
+  - commands:
+    - make publish-staging
+    label: "publish-staging"
+    branches: master
+    retry:
+        automatic:
+        # this command exiting with status 2 typically means that the git commit collided with another
+        - exit_status: 2
+          limit: 5
+
+  - block: "Release to production"
+    branches: master
+
+  - commands:
+    - make publish-production
+    label: "publish-production"
+    branches: master
+    retry:
+        automatic:
+        # this command exiting with status 2 typically means that the git commit collided with another
+        - exit_status: 2
+          limit: 5

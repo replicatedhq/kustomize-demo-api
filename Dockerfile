@@ -4,7 +4,14 @@ ADD . /go/src/github.com/replicatedhq/kustomize-demo-api
 
 WORKDIR /go/src/github.com/replicatedhq/kustomize-demo-api
 
-RUN go build -mod vendor -o /kustomize-demo-api .
+ARG VERSION=undefined
+ARG GITSHA=undefined
+ARG BUILDTIME=undefined
+
+RUN go build -mod vendor \
+	-ldflags "-X github.com/replicatedhq/kustomize-demo-api/pkg/version.version=$VERSION -X github.com/replicatedhq/kustomize-demo-api/pkg/version.gitSHA=$GITSHA -X github.com/replicatedhq/kustomize-demo-api/pkg/version.buildTime=$BUILDTIME" \
+	-i \
+	-o /kustomize-demo-api .
 
 FROM alpine:latest
 COPY --from=builder /kustomize-demo-api /kustomize-demo-api

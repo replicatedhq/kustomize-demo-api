@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-demo-api
+spec:
+  template:
+    spec:
+      containers:
+        - name: kustomize-demo-api
+          workingDir: /go/src/github.com/replicatedhq/vandoor/kustomize-demo-api

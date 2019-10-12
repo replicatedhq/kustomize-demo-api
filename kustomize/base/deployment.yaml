@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-demo-api
+spec:
+  selector:
+    matchLabels:
+      app: kustomize-demo-api
+  template:
+    metadata:
+      labels:
+        app: kustomize-demo-api
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - kustomize-demo-api
+              topologyKey: kubernetes.io/hostname
+            weight: 2
+      containers:
+        - name: kustomize-demo-api
+          image: replicated-kustomize-demo-api
+          imagePullPolicy: IfNotPresent
+          workingDir: /go/src/github.com/replicatedcom/kustomize-demo-api
+          env:
+            - name: PROJECT_NAME
+              value: kustomize-demo-api
+          ports:
+            - name: kustomize-demo-api
+              containerPort: 3000
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: kustomize-demo-api
+              scheme: HTTP
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /livez
+              port: kustomize-demo-api
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 1
