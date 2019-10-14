@@ -20,7 +20,7 @@ func Serve() error {
 
 	kust := root.Group("kustomize")
 	kust.POST("patch", KustomizePatch)
-	kust.POST("apply", ApplyPatch)
+	kust.POST("apply", KustomizeApply)
 
 	return g.Run(":3000")
 }
@@ -85,7 +85,7 @@ func KustomizePatch(c *gin.Context) {
 	})
 }
 
-func ApplyPatch(c *gin.Context) {
+func KustomizeApply(c *gin.Context) {
 	type Request struct {
 		Resource string `json:"resource"`
 		Patch    string `json:"patch"`

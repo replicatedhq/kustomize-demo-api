@@ -1,7 +1,6 @@
 package patcher
 
 import (
-	"encoding/json"
 	"reflect"
 	"strconv"
 
@@ -14,13 +13,9 @@ const PATCH_TOKEN = "TO_BE_MODIFIED"
 func ModifyField(original []byte, path []string) ([]byte, error) {
 	originalMap := map[string]interface{}{}
 
-	originalJSON, err := yaml.YAMLToJSON(original)
+	err := yaml.Unmarshal(original, &originalMap)
 	if err != nil {
-		return nil, errors.Wrap(err, "original yaml to json")
-	}
-
-	if err := json.Unmarshal(originalJSON, &originalMap); err != nil {
-		return nil, errors.Wrap(err, "unmarshal original yaml")
+		return nil, errors.Wrap(err, "unmarshal yaml")
 	}
 
 	modified, err := modifyField(originalMap, []string{}, path)
@@ -28,14 +23,9 @@ func ModifyField(original []byte, path []string) ([]byte, error) {
 		return nil, errors.Wrap(err, "error modifying value")
 	}
 
-	modifiedJSON, err := json.Marshal(modified)
+	modifiedYAML, err := yaml.Marshal(modified)
 	if err != nil {
-		return nil, errors.Wrap(err, "marshal modified json")
-	}
-
-	modifiedYAML, err := yaml.JSONToYAML(modifiedJSON)
-	if err != nil {
-		return nil, errors.Wrap(err, "modified json to yaml")
+		return nil, errors.Wrap(err, "marshal yaml")
 	}
 
 	return modifiedYAML, nil
