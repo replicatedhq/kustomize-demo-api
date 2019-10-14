@@ -4,10 +4,15 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"sigs.k8s.io/kustomize/k8sdeps"
-	"sigs.k8s.io/kustomize/pkg/fs"
-	"sigs.k8s.io/kustomize/pkg/loader"
-	"sigs.k8s.io/kustomize/pkg/target"
+	"sigs.k8s.io/kustomize/v3/k8sdeps/kunstruct"
+	"sigs.k8s.io/kustomize/v3/k8sdeps/transformer"
+	"sigs.k8s.io/kustomize/v3/k8sdeps/validator"
+	"sigs.k8s.io/kustomize/v3/pkg/fs"
+	"sigs.k8s.io/kustomize/v3/pkg/loader"
+	"sigs.k8s.io/kustomize/v3/pkg/plugins"
+	"sigs.k8s.io/kustomize/v3/pkg/resmap"
+	"sigs.k8s.io/kustomize/v3/pkg/resource"
+	"sigs.k8s.io/kustomize/v3/pkg/target"
 )
 
 const basicK8sYaml = `
@@ -20,7 +25,7 @@ resources:
 `
 
 func ApplyPatch(original []byte, patch []byte) ([]byte, error) {
-	fileSys := fs.MakeFakeFS()
+	fileSys := fs.MakeFsInMemory()
 	originalFile, err := fileSys.Create("/original.yaml")
 	if err != nil {
 		return nil, errors.Wrap(err, "create original.yaml")
@@ -58,14 +63,14 @@ func runKustomize(fSys fs.FileSystem, kustomizationPath string) ([]byte, error) 
 		return nil, err
 	}
 
-	ldr, err := loader.NewLoader(absPath, fSys)
+	ldr, err := loader.NewLoader(loader.RestrictionRootOnly, &validator.KustValidator{}, absPath, fSys)
 	if err != nil {
 		return nil, errors.Wrap(err, "make loader")
 	}
 
-	k8sFactory := k8sdeps.NewFactory()
-
-	kt, err := target.NewKustTarget(ldr, k8sFactory.ResmapF, k8sFactory.TransformerF)
+	rf := resmap.NewFactory(resource.NewFactory(kunstruct.NewKunstructuredFactoryImpl()), transformer.NewFactoryImpl())
+	pc := plugins.DefaultPluginConfig()
+	kt, err := target.NewKustTarget(ldr, rf, transformer.NewFactoryImpl(), plugins.NewLoader(pc, rf))
 	if err != nil {
 		return nil, errors.Wrap(err, "make customized kustomize target")
 	}
@@ -76,7 +81,7 @@ func runKustomize(fSys fs.FileSystem, kustomizationPath string) ([]byte, error) 
 	}
 
 	// Output the objects.
-	res, err := allResources.EncodeAsYaml()
+	res, err := allResources.AsYaml()
 	if err != nil {
 		return nil, errors.Wrap(err, "encode as yaml")
 	}

@@ -30,7 +30,7 @@ github.com/dsnet/compress/bzip2/internal/sais
 github.com/dsnet/compress/internal
 github.com/dsnet/compress/internal/errors
 github.com/dsnet/compress/internal/prefix
-# github.com/emicklei/go-restful v2.8.1+incompatible
+# github.com/emicklei/go-restful v2.9.6+incompatible
 github.com/emicklei/go-restful
 github.com/emicklei/go-restful/log
 # github.com/evanphx/json-patch v4.5.0+incompatible
@@ -81,7 +81,7 @@ github.com/google/certificate-transparency-go/x509
 github.com/google/certificate-transparency-go/x509/pkix
 # github.com/google/gofuzz v1.0.0
 github.com/google/gofuzz
-# github.com/googleapis/gnostic v0.2.0
+# github.com/googleapis/gnostic v0.3.0
 github.com/googleapis/gnostic/OpenAPIv2
 github.com/googleapis/gnostic/compiler
 github.com/googleapis/gnostic/extensions
@@ -127,6 +127,8 @@ github.com/replicatedhq/ship/pkg/util/warnings
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
+# github.com/spf13/pflag v1.0.5
+github.com/spf13/pflag
 # github.com/stretchr/testify v1.4.0
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
@@ -252,34 +254,44 @@ k8s.io/klog
 k8s.io/kube-openapi/pkg/common
 k8s.io/kube-openapi/pkg/util/proto
 # sigs.k8s.io/kustomize v2.0.3+incompatible
-sigs.k8s.io/kustomize/k8sdeps
 sigs.k8s.io/kustomize/k8sdeps/configmapandsecret
 sigs.k8s.io/kustomize/k8sdeps/kunstruct
 sigs.k8s.io/kustomize/k8sdeps/kv
-sigs.k8s.io/kustomize/k8sdeps/transformer
-sigs.k8s.io/kustomize/k8sdeps/transformer/hash
-sigs.k8s.io/kustomize/k8sdeps/transformer/patch
-sigs.k8s.io/kustomize/k8sdeps/validator
-sigs.k8s.io/kustomize/pkg/constants
-sigs.k8s.io/kustomize/pkg/expansion
-sigs.k8s.io/kustomize/pkg/factory
-sigs.k8s.io/kustomize/pkg/fs
-sigs.k8s.io/kustomize/pkg/git
 sigs.k8s.io/kustomize/pkg/gvk
 sigs.k8s.io/kustomize/pkg/ifc
-sigs.k8s.io/kustomize/pkg/ifc/transformer
 sigs.k8s.io/kustomize/pkg/image
 sigs.k8s.io/kustomize/pkg/internal/error
-sigs.k8s.io/kustomize/pkg/loader
 sigs.k8s.io/kustomize/pkg/patch
-sigs.k8s.io/kustomize/pkg/patch/transformer
 sigs.k8s.io/kustomize/pkg/resid
-sigs.k8s.io/kustomize/pkg/resmap
 sigs.k8s.io/kustomize/pkg/resource
-sigs.k8s.io/kustomize/pkg/target
-sigs.k8s.io/kustomize/pkg/transformers
-sigs.k8s.io/kustomize/pkg/transformers/config
-sigs.k8s.io/kustomize/pkg/transformers/config/defaultconfig
 sigs.k8s.io/kustomize/pkg/types
+# sigs.k8s.io/kustomize/v3 v3.3.1
+sigs.k8s.io/kustomize/v3/internal/kusterr
+sigs.k8s.io/kustomize/v3/k8sdeps/configmapandsecret
+sigs.k8s.io/kustomize/v3/k8sdeps/kunstruct
+sigs.k8s.io/kustomize/v3/k8sdeps/transformer
+sigs.k8s.io/kustomize/v3/k8sdeps/transformer/patch
+sigs.k8s.io/kustomize/v3/k8sdeps/validator
+sigs.k8s.io/kustomize/v3/pkg/accumulator
+sigs.k8s.io/kustomize/v3/pkg/expansion
+sigs.k8s.io/kustomize/v3/pkg/fs
+sigs.k8s.io/kustomize/v3/pkg/git
+sigs.k8s.io/kustomize/v3/pkg/gvk
+sigs.k8s.io/kustomize/v3/pkg/hasher
+sigs.k8s.io/kustomize/v3/pkg/ifc
+sigs.k8s.io/kustomize/v3/pkg/image
+sigs.k8s.io/kustomize/v3/pkg/inventory
+sigs.k8s.io/kustomize/v3/pkg/loader
+sigs.k8s.io/kustomize/v3/pkg/pgmconfig
+sigs.k8s.io/kustomize/v3/pkg/plugins
+sigs.k8s.io/kustomize/v3/pkg/resid
+sigs.k8s.io/kustomize/v3/pkg/resmap
+sigs.k8s.io/kustomize/v3/pkg/resource
+sigs.k8s.io/kustomize/v3/pkg/target
+sigs.k8s.io/kustomize/v3/pkg/transformers
+sigs.k8s.io/kustomize/v3/pkg/transformers/config
+sigs.k8s.io/kustomize/v3/pkg/transformers/config/defaultconfig
+sigs.k8s.io/kustomize/v3/pkg/types
+sigs.k8s.io/kustomize/v3/plugin/builtin
 # sigs.k8s.io/yaml v1.1.0
 sigs.k8s.io/yaml
