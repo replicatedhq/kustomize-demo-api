@@ -13,6 +13,10 @@ import (
 
 func Serve() error {
 	g := gin.New()
+	g.Use(
+		gin.LoggerWithWriter(gin.DefaultWriter, "/healthz", "/livez"),
+		gin.Recovery(),
+	)
 
 	root := g.Group("/")
 	root.GET("/healthz", Healthz)
