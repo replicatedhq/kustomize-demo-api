@@ -8,6 +8,8 @@ ARG VERSION=undefined
 ARG GITSHA=undefined
 ARG BUILDTIME=undefined
 
+ENV CGO_ENABLED=0
+
 RUN go build -mod vendor \
 	-ldflags "-X github.com/replicatedhq/kustomize-demo-api/pkg/version.version=$VERSION -X github.com/replicatedhq/kustomize-demo-api/pkg/version.gitSHA=$GITSHA -X github.com/replicatedhq/kustomize-demo-api/pkg/version.buildTime=$BUILDTIME" \
 	-i \
