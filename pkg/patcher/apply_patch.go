@@ -10,7 +10,7 @@ import (
 	"sigs.k8s.io/kustomize/pkg/target"
 )
 
-const basick8syaml = `
+const basicK8sYaml = `
 kind: ""
 apiversion: ""
 patchesStrategicMerge:
@@ -43,7 +43,7 @@ func ApplyPatch(original []byte, patch []byte) ([]byte, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "create kustomization.yaml")
 	}
-	_, err = k8sFile.Write([]byte(basick8syaml))
+	_, err = k8sFile.Write([]byte(basicK8sYaml))
 	if err != nil {
 		return nil, errors.Wrap(err, "write kustomization.yaml")
 	}
