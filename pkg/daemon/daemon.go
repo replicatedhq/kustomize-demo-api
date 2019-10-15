@@ -17,8 +17,12 @@ func Serve() error {
 	g.Use(
 		gin.LoggerWithWriter(gin.DefaultWriter, "/healthz", "/livez"),
 		gin.Recovery(),
-		cors.Default(),
 	)
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowHeaders = []string{"*"}
+	g.Use(cors.New(corsConfig))
 
 	root := g.Group("/")
 	root.GET("/healthz", Healthz)
@@ -86,6 +90,7 @@ func KustomizePatch(c *gin.Context) {
 		}
 	}
 
+	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(200, map[string]interface{}{
 		"patch": string(patch),
 	})
@@ -110,6 +115,7 @@ func KustomizeApply(c *gin.Context) {
 		return
 	}
 
+	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(200, map[string]interface{}{
 		"modified": string(modified),
 	})
