@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
@@ -16,6 +17,7 @@ func Serve() error {
 	g.Use(
 		gin.LoggerWithWriter(gin.DefaultWriter, "/healthz", "/livez"),
 		gin.Recovery(),
+		cors.Default(),
 	)
 
 	root := g.Group("/")

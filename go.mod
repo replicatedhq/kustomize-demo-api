@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/ghodss/yaml v1.0.0
+	github.com/gin-contrib/cors v0.0.0-20170318125340-cf4846e6a636
 	github.com/gin-gonic/gin v1.4.1-0.20190904042650-c3f7fc399a11
 	github.com/go-openapi/spec v0.19.3 // indirect
 	github.com/pkg/errors v0.8.1

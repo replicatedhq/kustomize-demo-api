@@ -37,6 +37,8 @@ github.com/emicklei/go-restful/log
 github.com/evanphx/json-patch
 # github.com/ghodss/yaml v1.0.0
 github.com/ghodss/yaml
+# github.com/gin-contrib/cors v0.0.0-20170318125340-cf4846e6a636
+github.com/gin-contrib/cors
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
 # github.com/gin-gonic/gin v1.4.1-0.20190904042650-c3f7fc399a11
