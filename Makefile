@@ -34,13 +34,8 @@ define LDFLAGS
 "
 endef
 
-.state/lint-deps: .deps/get_lint_deps.sh
-	time ./.deps/get_lint_deps.sh
-	@mkdir -p .state/
-	@touch .state/lint-deps
-
 .PHONY: lint
-lint: .state/lint-deps
+lint:
 	golangci-lint run ./pkg/...
 	ineffassign ./pkg
 

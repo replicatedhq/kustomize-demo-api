@@ -3,7 +3,7 @@ steps:
     label: "test"
     plugins:
     - docker#v3.0.1:
-        image: replicated/gitops-builder:buildkite-go12
+        image: replicated/gitops-builder:buildkite-go13
         always-pull: true
         workdir: /go/src/github.com/replicatedhq/kustomize-demo-api
     artifact_paths:
