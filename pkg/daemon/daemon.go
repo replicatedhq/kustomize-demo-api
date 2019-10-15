@@ -12,7 +12,7 @@ import (
 	"github.com/replicatedhq/kustomize-demo-api/pkg/version"
 )
 
-func Serve() error {
+func setupRouter() *gin.Engine {
 	g := gin.New()
 	g.Use(
 		gin.LoggerWithWriter(gin.DefaultWriter, "/healthz", "/livez"),
@@ -31,6 +31,12 @@ func Serve() error {
 	kust := root.Group("kustomize")
 	kust.POST("patch", KustomizePatch)
 	kust.POST("apply", KustomizeApply)
+
+	return g
+}
+
+func Serve() error {
+	g := setupRouter()
 
 	return g.Run(":3000")
 }
@@ -70,13 +76,25 @@ func KustomizePatch(c *gin.Context) {
 		}
 	}
 
-	modified, err := patcher.ModifyField([]byte(request.Original), stringPath)
+	// this code - replacing the original yaml with the patched yaml before generating new patches - fixes issues
+	// related modifying elements in a list that are already impacted by the existing patch
+	var baseYaml = []byte(request.Original)
+	if request.Patch != "" {
+		patchedYaml, err := patcher.ApplyPatch([]byte(request.Original), []byte(request.Patch))
+		if err != nil {
+			c.AbortWithError(500, errors.Wrapf(err, "apply existing patch"))
+			return
+		}
+		baseYaml = patchedYaml
+	}
+
+	modified, err := patcher.ModifyField(baseYaml, stringPath)
 	if err != nil {
 		c.AbortWithError(500, errors.Wrapf(err, "modify field"))
 		return
 	}
 
-	patch, err := patcher.CreateTwoWayMergePatch([]byte(request.Original), modified)
+	patch, err := patcher.CreateTwoWayMergePatch(baseYaml, modified)
 	if err != nil {
 		c.AbortWithError(500, errors.Wrapf(err, "create patch for field"))
 		return
@@ -91,7 +109,7 @@ func KustomizePatch(c *gin.Context) {
 	}
 
 	c.Header("Access-Control-Allow-Origin", "*")
-	c.JSON(200, map[string]interface{}{
+	c.IndentedJSON(200, map[string]interface{}{
 		"patch": string(patch),
 	})
 }
@@ -116,7 +134,7 @@ func KustomizeApply(c *gin.Context) {
 	}
 
 	c.Header("Access-Control-Allow-Origin", "*")
-	c.JSON(200, map[string]interface{}{
+	c.IndentedJSON(200, map[string]interface{}{
 		"modified": string(modified),
 	})
 }
