@@ -4,6 +4,7 @@ metadata:
   name: kustomize-demo-api
   labels:
     app: kustomize-demo-api
+  namespace: kustomize-demo-api
 spec:
   type: NodePort
   ports:
