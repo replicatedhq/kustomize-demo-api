@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/gin-contrib/cors"
@@ -38,7 +39,12 @@ func setupRouter() *gin.Engine {
 func Serve() error {
 	g := setupRouter()
 
-	return g.Run(":3000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	return g.Run(":" + port)
 }
 
 func Healthz(c *gin.Context) {
