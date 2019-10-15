@@ -86,7 +86,6 @@ func KustomizePatch(c *gin.Context) {
 		}
 	}
 
-	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(200, map[string]interface{}{
 		"patch": string(patch),
 	})
@@ -111,7 +110,6 @@ func KustomizeApply(c *gin.Context) {
 		return
 	}
 
-	c.Header("Access-Control-Allow-Origin", "*")
 	c.JSON(200, map[string]interface{}{
 		"modified": string(modified),
 	})
