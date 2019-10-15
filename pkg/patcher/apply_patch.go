@@ -24,6 +24,13 @@ resources:
 - original.yaml
 `
 
+const noPatchYaml = `
+kind: ""
+apiversion: ""
+resources:
+- original.yaml
+`
+
 func ApplyPatch(original []byte, patch []byte) ([]byte, error) {
 	fileSys := fs.MakeFsInMemory()
 	originalFile, err := fileSys.Create("/original.yaml")
@@ -48,9 +55,17 @@ func ApplyPatch(original []byte, patch []byte) ([]byte, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "create kustomization.yaml")
 	}
-	_, err = k8sFile.Write([]byte(basicK8sYaml))
-	if err != nil {
-		return nil, errors.Wrap(err, "write kustomization.yaml")
+
+	if len(patch) != 0 {
+		_, err = k8sFile.Write([]byte(basicK8sYaml))
+		if err != nil {
+			return nil, errors.Wrap(err, "write kustomization.yaml")
+		}
+	} else {
+		_, err = k8sFile.Write([]byte(noPatchYaml))
+		if err != nil {
+			return nil, errors.Wrap(err, "write kustomization.yaml")
+		}
 	}
 
 	applied, err := runKustomize(fileSys, "/")

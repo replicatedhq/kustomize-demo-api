@@ -80,6 +80,18 @@ func TestExistingPatch(t *testing.T) {
     "modified": "apiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  labels:\n    app: auditbeatMod\n    release: auditbeat\n  name: auditbeat\nrules:\n- apiGroups:\n  - \"\"\n  resources:\n  - namespaces\n  - pods\n  verbs:\n  - get\n  - list\n  - watch\n"
 }`,
 		},
+		{
+			name:     "apply nonexistent patch",
+			endpoint: "/kustomize/apply",
+			postContents: `
+{
+    "resource": "apiVersion: rbac.authorization.k8s.io/v1\n\n\n\nkind: ClusterRole\nmetadata:\n  labels:\n    app: auditbeat\n    release: auditbeat\n  name: auditbeat\nrules:\n- apiGroups:\n  - \"\"\n  resources:\n  - namespaces\n  - pods\n  verbs:\n  - get\n  - list\n  - watch\n",
+    "patch": ""
+}`,
+			expectResult: `{
+    "modified": "apiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  labels:\n    app: auditbeat\n    release: auditbeat\n  name: auditbeat\nrules:\n- apiGroups:\n  - \"\"\n  resources:\n  - namespaces\n  - pods\n  verbs:\n  - get\n  - list\n  - watch\n"
+}`,
+		},
 	}
 
 	router := setupRouter()
