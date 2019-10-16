@@ -5,10 +5,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/ghodss/yaml"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"github.com/replicatedhq/ship/pkg/util"
 	"sigs.k8s.io/kustomize/v3/pkg/types"
 
 	"github.com/replicatedhq/kustomize-demo-api/pkg/patcher"
@@ -166,7 +166,7 @@ func renderKustomize(resources, patches, bases []string) ([]byte, error) {
 		Bases:                 bases,
 	}
 
-	kustBytes, err := yaml.Marshal(genKust)
+	kustBytes, err := util.MarshalIndent(2, genKust)
 	if err != nil {
 		return nil, err
 	}

@@ -102,7 +102,7 @@ func TestDaemon(t *testing.T) {
     "bases": ["../../mybase"]
 }`,
 			expectResult: `{
-    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nbases:\n- ../../mybase\nkind: Kustomization\npatchesStrategicMerge:\n- mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
+    "kustomization": "kind: Kustomization\napiVersion: kustomize.config.k8s.io/v1beta1\npatchesStrategicMerge:\n- mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\nbases:\n- ../../mybase\n"
 }`,
 		},
 		{
@@ -113,7 +113,7 @@ func TestDaemon(t *testing.T) {
     "resources": ["mypath.yaml", "mypath2.yaml"]
 }`,
 			expectResult: `{
-    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
+    "kustomization": "kind: Kustomization\napiVersion: kustomize.config.k8s.io/v1beta1\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
 }`,
 		},
 		{
@@ -124,7 +124,7 @@ func TestDaemon(t *testing.T) {
     "patches": ["mypatchpath.yaml"]
 }`,
 			expectResult: `{
-    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nbases:\n- ../base\nkind: Kustomization\npatchesStrategicMerge:\n- mypatchpath.yaml\n"
+    "kustomization": "kind: Kustomization\napiVersion: kustomize.config.k8s.io/v1beta1\npatchesStrategicMerge:\n- mypatchpath.yaml\nbases:\n- ../base\n"
 }`,
 		},
 	}
