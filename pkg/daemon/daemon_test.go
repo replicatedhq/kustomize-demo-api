@@ -93,7 +93,7 @@ func TestDaemon(t *testing.T) {
 }`,
 		},
 		{
-			name:     "apply nonexistent patch",
+			name:     "generate general kustomization",
 			endpoint: "/kustomize/generate",
 			postContents: `
 {
@@ -103,6 +103,28 @@ func TestDaemon(t *testing.T) {
 }`,
 			expectResult: `{
     "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nbases:\n- ../../mybase\nkind: Kustomization\npatchesStrategicMerge:\n- mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
+}`,
+		},
+		{
+			name:     "generate base kustomization",
+			endpoint: "/kustomize/generate-base",
+			postContents: `
+{
+    "resources": ["mypath.yaml", "mypath2.yaml"]
+}`,
+			expectResult: `{
+    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
+}`,
+		},
+		{
+			name:     "generate overlay kustomization",
+			endpoint: "/kustomize/generate-overlay",
+			postContents: `
+{
+    "patches": ["mypatchpath.yaml"]
+}`,
+			expectResult: `{
+    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nbases:\n- ../base\nkind: Kustomization\npatchesStrategicMerge:\n- mypatchpath.yaml\n"
 }`,
 		},
 	}

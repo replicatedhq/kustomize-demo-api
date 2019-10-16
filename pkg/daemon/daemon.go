@@ -35,6 +35,8 @@ func setupRouter() *gin.Engine {
 	kust.POST("patch", KustomizePatch)
 	kust.POST("apply", KustomizeApply)
 	kust.POST("generate", KustomizeGenerate)
+	kust.POST("generate-base", KustomizeGenerateBase)
+	kust.POST("generate-overlay", KustomizeGenerateOverlay)
 
 	return g
 }
@@ -148,6 +150,29 @@ func KustomizeApply(c *gin.Context) {
 	})
 }
 
+func renderKustomize(resources, patches, bases []string) ([]byte, error) {
+	patchesStrategicMerge := []types.PatchStrategicMerge{}
+	for _, patchPath := range patches {
+		patchesStrategicMerge = append(patchesStrategicMerge, types.PatchStrategicMerge(patchPath))
+	}
+
+	genKust := types.Kustomization{
+		TypeMeta: types.TypeMeta{
+			Kind:       "Kustomization",
+			APIVersion: "kustomize.config.k8s.io/v1beta1",
+		},
+		Resources:             resources,
+		PatchesStrategicMerge: patchesStrategicMerge,
+		Bases:                 bases,
+	}
+
+	kustBytes, err := yaml.Marshal(genKust)
+	if err != nil {
+		return nil, err
+	}
+	return kustBytes, nil
+}
+
 func KustomizeGenerate(c *gin.Context) {
 	type Request struct {
 		Resources []string `json:"resources"`
@@ -162,22 +187,55 @@ func KustomizeGenerate(c *gin.Context) {
 		return
 	}
 
-	patches := []types.PatchStrategicMerge{}
-	for _, patchPath := range request.Patches {
-		patches = append(patches, types.PatchStrategicMerge(patchPath))
+	kustBytes, err := renderKustomize(request.Resources, request.Patches, request.Bases)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
 	}
 
-	genKust := types.Kustomization{
-		TypeMeta: types.TypeMeta{
-			Kind:       "Kustomization",
-			APIVersion: "kustomize.config.k8s.io/v1beta1",
-		},
-		Resources:             request.Resources,
-		PatchesStrategicMerge: patches,
-		Bases:                 request.Bases,
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.IndentedJSON(200, map[string]interface{}{
+		"kustomization": string(kustBytes),
+	})
+}
+
+func KustomizeGenerateBase(c *gin.Context) {
+	type Request struct {
+		Resources []string `json:"resources"`
+	}
+	var request Request
+
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
 	}
 
-	kustBytes, err := yaml.Marshal(genKust)
+	kustBytes, err := renderKustomize(request.Resources, nil, nil)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.IndentedJSON(200, map[string]interface{}{
+		"kustomization": string(kustBytes),
+	})
+}
+
+func KustomizeGenerateOverlay(c *gin.Context) {
+	type Request struct {
+		Patches []string `json:"patches"`
+	}
+	var request Request
+
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	kustBytes, err := renderKustomize(nil, request.Patches, []string{"../base"})
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
