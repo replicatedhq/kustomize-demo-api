@@ -97,11 +97,12 @@ func TestDaemon(t *testing.T) {
 			endpoint: "/kustomize/generate",
 			postContents: `
 {
-    "resources": ["mypath.yaml", "mypath2.yaml", "../../mybase"],
-    "patches": ["mypatchpath.yaml"]
+    "resources": ["mypath.yaml", "mypath2.yaml"],
+    "patches": ["mypatchpath.yaml"],
+    "bases": ["../../mybase"]
 }`,
 			expectResult: `{
-    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\npatches:\n- path: mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\n- ../../mybase\n"
+    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nbases:\n- ../../mybase\nkind: Kustomization\npatchesStrategicMerge:\n- mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\n"
 }`,
 		},
 	}

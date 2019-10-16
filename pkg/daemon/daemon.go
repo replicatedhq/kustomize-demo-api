@@ -152,6 +152,7 @@ func KustomizeGenerate(c *gin.Context) {
 	type Request struct {
 		Resources []string `json:"resources"`
 		Patches   []string `json:"patches"`
+		Bases     []string `json:"bases"`
 	}
 	var request Request
 
@@ -161,9 +162,9 @@ func KustomizeGenerate(c *gin.Context) {
 		return
 	}
 
-	patches := []types.Patch{}
+	patches := []types.PatchStrategicMerge{}
 	for _, patchPath := range request.Patches {
-		patches = append(patches, types.Patch{Path: patchPath})
+		patches = append(patches, types.PatchStrategicMerge(patchPath))
 	}
 
 	genKust := types.Kustomization{
@@ -171,8 +172,9 @@ func KustomizeGenerate(c *gin.Context) {
 			Kind:       "Kustomization",
 			APIVersion: "kustomize.config.k8s.io/v1beta1",
 		},
-		Resources: request.Resources,
-		Patches:   patches,
+		Resources:             request.Resources,
+		PatchesStrategicMerge: patches,
+		Bases:                 request.Bases,
 	}
 
 	kustBytes, err := yaml.Marshal(genKust)
