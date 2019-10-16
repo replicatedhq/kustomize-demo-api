@@ -5,9 +5,11 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/ghodss/yaml"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"sigs.k8s.io/kustomize/v3/pkg/types"
 
 	"github.com/replicatedhq/kustomize-demo-api/pkg/patcher"
 	"github.com/replicatedhq/kustomize-demo-api/pkg/version"
@@ -32,6 +34,7 @@ func setupRouter() *gin.Engine {
 	kust := root.Group("kustomize")
 	kust.POST("patch", KustomizePatch)
 	kust.POST("apply", KustomizeApply)
+	kust.POST("generate", KustomizeGenerate)
 
 	return g
 }
@@ -142,5 +145,44 @@ func KustomizeApply(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.IndentedJSON(200, map[string]interface{}{
 		"modified": string(modified),
+	})
+}
+
+func KustomizeGenerate(c *gin.Context) {
+	type Request struct {
+		Resources []string `json:"resources"`
+		Patches   []string `json:"patches"`
+	}
+	var request Request
+
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	patches := []types.Patch{}
+	for _, patchPath := range request.Patches {
+		patches = append(patches, types.Patch{Path: patchPath})
+	}
+
+	genKust := types.Kustomization{
+		TypeMeta: types.TypeMeta{
+			Kind:       "Kustomization",
+			APIVersion: "kustomize.config.k8s.io/v1beta1",
+		},
+		Resources: request.Resources,
+		Patches:   patches,
+	}
+
+	kustBytes, err := yaml.Marshal(genKust)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.IndentedJSON(200, map[string]interface{}{
+		"kustomization": string(kustBytes),
 	})
 }

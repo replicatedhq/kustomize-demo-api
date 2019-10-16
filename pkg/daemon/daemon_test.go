@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestExistingPatch(t *testing.T) {
+func TestDaemon(t *testing.T) {
 	tests := []struct {
 		name         string
 		endpoint     string
@@ -90,6 +90,18 @@ func TestExistingPatch(t *testing.T) {
 }`,
 			expectResult: `{
     "modified": "apiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  labels:\n    app: auditbeat\n    release: auditbeat\n  name: auditbeat\nrules:\n- apiGroups:\n  - \"\"\n  resources:\n  - namespaces\n  - pods\n  verbs:\n  - get\n  - list\n  - watch\n"
+}`,
+		},
+		{
+			name:     "apply nonexistent patch",
+			endpoint: "/kustomize/generate",
+			postContents: `
+{
+    "resources": ["mypath.yaml", "mypath2.yaml", "../../mybase"],
+    "patches": ["mypatchpath.yaml"]
+}`,
+			expectResult: `{
+    "kustomization": "apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\npatches:\n- path: mypatchpath.yaml\nresources:\n- mypath.yaml\n- mypath2.yaml\n- ../../mybase\n"
 }`,
 		},
 	}
