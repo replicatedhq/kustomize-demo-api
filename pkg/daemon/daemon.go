@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/replicatedhq/ship/pkg/util"
-	"sigs.k8s.io/kustomize/v3/pkg/types"
 
 	"github.com/replicatedhq/kustomize-demo-api/pkg/patcher"
 	"github.com/replicatedhq/kustomize-demo-api/pkg/version"
@@ -150,19 +149,20 @@ func KustomizeApply(c *gin.Context) {
 	})
 }
 
-func renderKustomize(resources, patches, bases []string) ([]byte, error) {
-	patchesStrategicMerge := []types.PatchStrategicMerge{}
-	for _, patchPath := range patches {
-		patchesStrategicMerge = append(patchesStrategicMerge, types.PatchStrategicMerge(patchPath))
-	}
+type localKustomization struct {
+	Kind                  string   `json:"kind,omitempty" yaml:"kind,omitempty"`
+	APIVersion            string   `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Bases                 []string `json:"bases,omitempty" yaml:"bases,omitempty"`
+	Resources             []string `json:"resources,omitempty" yaml:"resources,omitempty"`
+	PatchesStrategicMerge []string `json:"patchesStrategicMerge,omitempty" yaml:"patchesStrategicMerge,omitempty"`
+}
 
-	genKust := types.Kustomization{
-		TypeMeta: types.TypeMeta{
-			Kind:       "Kustomization",
-			APIVersion: "kustomize.config.k8s.io/v1beta1",
-		},
+func renderKustomize(resources, patches, bases []string) ([]byte, error) {
+	genKust := localKustomization{
+		Kind:                  "Kustomization",
+		APIVersion:            "kustomize.config.k8s.io/v1beta1",
 		Resources:             resources,
-		PatchesStrategicMerge: patchesStrategicMerge,
+		PatchesStrategicMerge: patches,
 		Bases:                 bases,
 	}
 
