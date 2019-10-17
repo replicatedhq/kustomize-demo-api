@@ -150,8 +150,8 @@ func KustomizeApply(c *gin.Context) {
 }
 
 type localKustomization struct {
-	Kind                  string   `json:"kind,omitempty" yaml:"kind,omitempty"`
 	APIVersion            string   `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Kind                  string   `json:"kind,omitempty" yaml:"kind,omitempty"`
 	Bases                 []string `json:"bases,omitempty" yaml:"bases,omitempty"`
 	Resources             []string `json:"resources,omitempty" yaml:"resources,omitempty"`
 	PatchesStrategicMerge []string `json:"patchesStrategicMerge,omitempty" yaml:"patchesStrategicMerge,omitempty"`
