@@ -1,6 +1,9 @@
 package daemon
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"os"
 	"strconv"
@@ -36,6 +39,7 @@ func setupRouter() *gin.Engine {
 	kust.POST("generate", KustomizeGenerate)
 	kust.POST("generate-base", KustomizeGenerateBase)
 	kust.POST("generate-overlay", KustomizeGenerateOverlay)
+	kust.POST("bundle", KustomizeGenerateTarball)
 
 	return g
 }
@@ -245,4 +249,53 @@ func KustomizeGenerateOverlay(c *gin.Context) {
 	c.IndentedJSON(200, map[string]interface{}{
 		"kustomization": string(kustBytes),
 	})
+}
+
+func KustomizeGenerateTarball(c *gin.Context) {
+	type File struct {
+		Filename string `json:"filename"`
+		Contents string `json:"contents"`
+	}
+	type Request struct {
+		Files []File `json:"files"`
+	}
+	var request Request
+
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return
+	}
+
+	buf := bytes.Buffer{}
+	gzw := gzip.NewWriter(&buf)
+	defer gzw.Close()
+	tw := tar.NewWriter(gzw)
+	defer tw.Close()
+
+	for _, file := range request.Files {
+
+		fileHeader := tar.Header{
+			Name: file.Filename,
+			Size: int64(len(file.Contents)),
+			Mode: 0600,
+		}
+
+		err = tw.WriteHeader(&fileHeader)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		_, err = tw.Write([]byte(file.Contents))
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+	}
+
+	tw.Close()
+	gzw.Close()
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.DataFromReader(200, int64(buf.Len()), "application/gzip", &buf, map[string]string{})
 }
