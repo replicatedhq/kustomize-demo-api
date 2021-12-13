@@ -88,7 +88,7 @@ publish-staging: BUILD_VERSION = $(shell echo ${BUILDKITE_COMMIT} | cut -c1-7)
 publish-staging: OVERLAY = staging
 publish-staging: GITOPS_OWNER = replicatedcom
 publish-staging: GITOPS_REPO = gitops-deploy
-publish-staging: GITOPS_BRANCH = master
+publish-staging: GITOPS_BRANCH = main
 publish-staging: gitops
 
 .PHONY: publish-production
