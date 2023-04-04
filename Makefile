@@ -40,7 +40,7 @@ lint:
 	ineffassign ./pkg
 
 .PHONY: test
-test: lint
+test:
 	go test -v ./pkg/...
 
 bin/kustomize-demo-api: $(SRC)
