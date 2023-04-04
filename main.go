@@ -9,6 +9,8 @@ import (
 
 func main() {
 	fmt.Printf("running kustomize-demo-api\n%+v\n", version.GetBuild())
-	daemon.Serve()
-	return
+	err := daemon.Serve()
+	if err != nil {
+		panic(err)
+	}
 }

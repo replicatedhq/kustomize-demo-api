@@ -1,4 +1,4 @@
-FROM golang:1.13-alpine AS builder
+FROM golang:1.19-alpine AS builder
 
 ADD . /go/src/github.com/replicatedhq/kustomize-demo-api
 
