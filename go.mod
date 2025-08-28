@@ -66,7 +66,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/laverya/yaml.v3 v3.0.0-beta3 // indirect
 	gopkg.in/yaml.v2 v2.2.4 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20190709130402-674ba3eaed22 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.0.0-20191010143144-fbf594f18f80 // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20190918143330-0270cf2f1c1d // indirect
